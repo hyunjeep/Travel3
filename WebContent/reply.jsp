@@ -53,7 +53,7 @@
 				required="required">
 		</div>
 
-		<label for="exampleFormControlInput2"> 작성자 : <input name="writer"> &nbsp;&nbsp;
+		<label for="exampleFormControlInput2"> 작성자 : <input name="writer" class="form-control" id="exampleFormControlInput2" value="${login.id}" readonly="readonly"> &nbsp;&nbsp;
 		</label>
 
 		<div class="form-group">

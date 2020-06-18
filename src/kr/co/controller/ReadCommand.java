@@ -18,16 +18,31 @@ public class ReadCommand implements Command {
 			throws ServletException, IOException {
 		
 		String sNum = request.getParameter("num");
-		int num = 0;
+		String sCurPage = request.getParameter("curPage");
+		String sLocationCode = request.getParameter("locationCode");
 		
+		int num = 0;
 		if (sNum != null) {
 			num = Integer.parseInt(sNum);
 		}
 		
+		int curPage = 1;
+		if (sCurPage != null) {
+			curPage = Integer.parseInt(sCurPage);
+		}
+		
+		int locationCode = 0;
+		if (sLocationCode != null) {
+			locationCode = Integer.parseInt(sLocationCode);
+		}
+		
+		
 		BoardDAO dao = new BoardDAO();
 		BoardDTO dto = dao.read(num);
 		
+		request.setAttribute("lc", locationCode);
 		request.setAttribute("dto", dto);
+		request.setAttribute("cp", curPage);
 		
 		return new CommandAction(false, "read.jsp");
 	}

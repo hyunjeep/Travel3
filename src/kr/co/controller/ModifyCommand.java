@@ -17,6 +17,7 @@ public class ModifyCommand implements Command {
 	public CommandAction execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
+		String sCurPage = request.getParameter("curPage");
 		String sNum = request.getParameter("num");
 		String writer = request.getParameter("writer");
 		String title = request.getParameter("title");
@@ -32,10 +33,15 @@ public class ModifyCommand implements Command {
 		if (sLocationCode != null) {
 			locationCode = Integer.parseInt(sLocationCode);
 		}
+		
+		int curPage = 1;
+		if (sCurPage != null) {
+			curPage = Integer.parseInt(sCurPage);
+		}
 	
 		new BoardDAO().modify(new BoardDTO(num, writer, title, locationCode, null, content, null, -1, -1, -1, -1));
 
-		return new CommandAction(true, "list.do");
+		return new CommandAction(true, "list.do?curPage="+curPage+"&locationCode="+locationCode);
 	}
 
 }

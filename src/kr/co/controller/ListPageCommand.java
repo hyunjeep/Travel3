@@ -33,9 +33,8 @@ public class ListPageCommand implements Command {
 		}
 		
 		BoardDAO dao = new BoardDAO();
-		PageTO to = dao.select(curPage, location);
+		PageTO to = dao.page(curPage, location);
 
-		request.setAttribute("locationCode", location);
 		request.setAttribute("to", to);
 		request.setAttribute("list", to.getList());
 		

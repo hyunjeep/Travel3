@@ -78,7 +78,7 @@
 							<td>${dto.num}</td>
 							<td>${dto.locationName}</td>
 							<td width="200px"><c:forEach begin="1" end="${dto.repIndent}">
-						&nbsp;&nbsp; Re:
+						&nbsp;&nbsp;Re:
 					</c:forEach> <a href="read.do?num=${dto.num}">${dto.title}</a></td>
 							<td>${dto.writer}</td>
 							<td>${dto.writeday}</td>
@@ -95,25 +95,26 @@
 		</div>
 		<br>
 		<c:if test="${(to.curPage-1) > 0 }">
-			<a style="text-decoration: none;" href="list.do?locationCode=${param.locationCode}&curPage=${to.curPage-1}">&laquo;</a>
+			<a style="text-decoration: none;" href="list.do?curPage=${to.curPage-1}&locationCode=${param.locationCode}">&laquo;</a>
 		</c:if>
 		&nbsp;
 		<c:forEach begin="${to.beginPageNum}" end="${to.stopPageNum}" var="idx">
 			<c:if test="${to.curPage == idx}">
-				<a style="font-size: 20px; text-decoration: none;" href="list.do?locationCode=${paramlocationCode}&curPage=${idx}">&nbsp;${idx}&nbsp;</a>&nbsp;
+				<a style="font-size: 20px; text-decoration: none;" href="list.do?curPage=${idx}&locationCode=${param.locationCode}">&nbsp;${idx}&nbsp;</a>&nbsp;
 		</c:if>
 			<c:if test="${to.curPage != idx}">
-				<a style="text-decoration: none;" href="list.do?locationCode=${param.locationCode}&curPage=${idx}">${idx}</a>&nbsp;&nbsp;
+				<a style="text-decoration: none;" href="list.do?curPage=${idx}&locationCode=${param.locationCode}">${idx}</a>&nbsp;&nbsp;
 		</c:if>
 		</c:forEach>
 
 		<c:if test="${to.curPage != to.totalPage}">
-			<a style="text-decoration: none;" href="list.do?locationCode=${param.locationCode}&curPage=${to.curPage + 1}">&raquo;</a>
+			<a style="text-decoration: none;" href="list.do?curPage=${to.curPage + 1}&locationCode=${param.locationCode}">&raquo;</a>
 		</c:if>
 
 		<br> <br>
 		<c:if test="${null ne login.id}">
 			<a href="writeui.do" class="btn btn-outline-primary">글쓰기</a>
 		</c:if>
+			<%@ include file="./com/footer.jsp"%>
 </body>
 </html>

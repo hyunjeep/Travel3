@@ -16,19 +16,20 @@ public class ModifyUICommand implements Command {
 	@Override
 	public CommandAction execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		
+
 		String sNum = request.getParameter("num");
+
 		int num = 0;
-		
+
 		if (sNum != null) {
 			num = Integer.parseInt(sNum);
 		}
-		
+
 		BoardDAO dao = new BoardDAO();
 		BoardDTO dto = dao.modifyUI(num);
-		
+
 		request.setAttribute("dto", dto);
-		
+
 		return new CommandAction(false, "modify.jsp");
 	}
 

@@ -360,103 +360,24 @@ public class BoardDAO {
 		}
 	}
 
-	public PageTO page(int curPage) {
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		String sql = "select * from (select rownum rnum, num, writer, writeday, title, locationName, content,"
-				+ " readcnt, repRoot, repStep, repIndent  from (select * from tbl_board b left join tbl_location l"
-				+ " on b.locationCode = l.locationCode order by repRoot desc, repStep asc)) where rnum >=? and rnum <=?";
-		
-		PageTO ato = new PageTO(curPage);
-		List<BoardDTO> list = new ArrayList<BoardDTO>();
-
-		try {
-			conn = dataFactory.getConnection();
-
-			int amount = getAmount(conn);
-			ato.setAmount(amount);
-
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, ato.getStartNum());
-			pstmt.setInt(2, ato.getEndNum());
-
-			rs = pstmt.executeQuery();
-			while (rs.next()) {
-				int num = rs.getInt("num");
-				String title = rs.getString("title");
-				String writer = rs.getString("writer");
-				String locationName = rs.getString("locationName");
-				String writeday = rs.getString("writeday");
-				int readcnt = rs.getInt("readcnt");
-				int repRoot = rs.getInt("repRoot");
-				int repStep = rs.getInt("repStep");
-				int repIndent = rs.getInt("repIndent");
-
-				BoardDTO dto = new BoardDTO(num, writer, title, 0, locationName, null, writeday, readcnt, repRoot, repStep,
-						repIndent);
-				list.add(dto);
-			}
-			ato.setList(list);
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				closeAll(rs, pstmt, conn);
-			} catch (Exception e2) {
-				e2.printStackTrace();
-			}
-		}
-		return ato;
-	}
-
-	private int getAmount(Connection conn) {
-		int amount = 0;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		String sql = "select count(num) from tbl_board";
-
-		try {
-			pstmt = conn.prepareStatement(sql);
-			rs = pstmt.executeQuery();
-			if (rs.next()) {
-				amount = rs.getInt(1);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				closeAll(rs, pstmt, null);
-			} catch (Exception e2) {
-				e2.printStackTrace();
-			}
-		}
-		return amount;
-	}
-
-	public PageTO select(int curPage, int location) {
+	public PageTO page(int curPage, int location) {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		String sql = "select * from (select rownum rnum, num, writer, writeday, title, locationName, content, readcnt, repRoot, repStep, repIndent "
 				+ "from (select * from tbl_board b left join tbl_location l on b.locationCode = l.locationCode where b.locationCode like decode(?, 0, '%', ?)" + 
 				" order by repRoot desc, repStep asc)) where rnum >=? and rnum <=?";
-				
-//		String sql = "select * from (select rownum rnum, num, writer, writeday, title, locationName, content, readcnt, repRoot, repStep, repIndent"
-//				+ " from (select * from tbl_board b left join tbl_location l on b.locationCode = l.locationCode where b.locationCode = ?"
-//				+ " order by repRoot desc, repStep asc)) where rnum >=? and rnum <=?";
-				
+
 		PageTO to = new PageTO(curPage);
 		List<BoardDTO> list = new ArrayList<BoardDTO>();
 
 		try {
 			conn = dataFactory.getConnection();
 
-			int amount = getAmount2(conn, location);
+			int amount = getAmount(conn, location);
 			to.setAmount(amount);
 		
 			pstmt = conn.prepareStatement(sql);
-			System.out.println("로케이션값"+location);
 			pstmt.setInt(1, location);
 			pstmt.setInt(2, location);
 			pstmt.setInt(3, to.getStartNum());
@@ -492,7 +413,7 @@ public class BoardDAO {
 		return to;
 	}
 
-	private int getAmount2(Connection conn, int locationCode) {
+	private int getAmount(Connection conn, int locationCode) {
 		int amount = 0;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;

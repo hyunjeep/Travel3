@@ -32,7 +32,7 @@ public class WriteCommand implements Command {
 		BoardDTO dto = new BoardDTO(0, writer, title, locationCode, null, content, null, 0, 0, 0, 0);
 		dao.write(dto);
 
-		return new CommandAction(true, "list.do");
+		return new CommandAction(true, "list.do?curPage=1&locationCode="+locationCode);
 	}
 
 }
