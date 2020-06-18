@@ -130,3 +130,5 @@ where b.num= 2
 
 
 update tbl_board set repStep = repStep+1 where repRoot=? and repStep>?
+
+-- 주석 저장
