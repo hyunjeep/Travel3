@@ -40,10 +40,8 @@ public class ReadCommand implements Command {
 		BoardDAO dao = new BoardDAO();
 		BoardDTO dto = dao.read(num);
 		
-		request.setAttribute("lc", locationCode);
 		request.setAttribute("dto", dto);
-		request.setAttribute("cp", curPage);
-		
+
 		return new CommandAction(false, "read.jsp");
 	}
 

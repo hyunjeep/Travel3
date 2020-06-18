@@ -49,7 +49,9 @@
 				<input name="title" class="form-control" id="exampleFormControlInput1" value="${dto.title}" required="required">
 		</div>
 
-		<label for="exampleFormControlInput2"> 작성자 : ${dto.writer}&nbsp;&nbsp;|&nbsp;&nbsp;조회수 : ${dto.readcnt} </label>
+		<label for="exampleFormControlInput2"> 작성자 : <input class="form-control" id="exampleFormControlInput2" name="writer" value="${login.id}" readonly="readonly">&nbsp;&nbsp;</label>
+		<label for="exampleFormControlInput3"> 
+		조회수 : <input class="form-control" id="exampleFormControlInput2" name="readcnt" value="${dto.readcnt}" readonly="readonly"></label>
 
 		<div class="form-group">
 			<label for="exampleFormControlTextlocation1">content</label>
@@ -58,7 +60,7 @@
 		<button class="btn btn-primary" type="submit">수정</button>
 		<a class="btn btn-outline-primary" href="delete.do?num=${dto.num}">삭제</a>
 		<a class="btn btn-outline-primary" href="replyui.do?num=${dto.num}&title=${dto.title}">답글</a>
-		<a class="btn btn-outline-primary" href="list.do">목록</a>
+		<a class="btn btn-outline-primary" href="list.do?curPage=${param.curPage}&locationCode=${param.locationCode}">목록</a>
 	</form>
 
 	<script>

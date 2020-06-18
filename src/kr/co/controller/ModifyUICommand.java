@@ -18,16 +18,27 @@ public class ModifyUICommand implements Command {
 			throws ServletException, IOException {
 
 		String sNum = request.getParameter("num");
+		String sCurPage = request.getParameter("curPage");
+		String sLocationCode = request.getParameter("locationCode");
 
 		int num = 0;
-
 		if (sNum != null) {
 			num = Integer.parseInt(sNum);
+		}
+		
+		int curPage = 1;
+		if (sCurPage != null) {
+			curPage = Integer.parseInt(sCurPage);
+		}
+		
+		int locationCode = 0;
+		if (sLocationCode != null) {
+			locationCode = Integer.parseInt(sLocationCode);
 		}
 
 		BoardDAO dao = new BoardDAO();
 		BoardDTO dto = dao.modifyUI(num);
-
+		
 		request.setAttribute("dto", dto);
 
 		return new CommandAction(false, "modify.jsp");

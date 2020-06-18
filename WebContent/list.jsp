@@ -79,7 +79,7 @@
 							<td>${dto.locationName}</td>
 							<td width="200px"><c:forEach begin="1" end="${dto.repIndent}">
 						&nbsp;&nbsp;Re:
-					</c:forEach> <a href="read.do?num=${dto.num}">${dto.title}</a></td>
+					</c:forEach> <a href="read.do?num=${dto.num}&curPage=${to.curPage}&locationCode=${param.locationCode}">${dto.title}</a></td>
 							<td>${dto.writer}</td>
 							<td>${dto.writeday}</td>
 							<td>${dto.readcnt}</td>
