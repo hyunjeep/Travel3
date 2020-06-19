@@ -15,7 +15,6 @@ public class WriteUICommand implements Command {
 	@Override
 	public CommandAction execute(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-	
 		
 		return new CommandAction(false, "write.jsp");
 	}

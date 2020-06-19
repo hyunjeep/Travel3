@@ -57,9 +57,7 @@
 			<textarea class="form-control" id="exampleFormControlTextlocation1" rows="10" name="content"></textarea>
 		</div>
 		<button class="btn btn-primary" type="submit">등록</button>
-		<a class="btn btn-outline-primary" href="delete.do?num=${dto.num}">삭제</a>
-		<a class="btn btn-outline-primary" href="replyui.do?num=${dto.num}&title=${dto.title}">답글</a>
-		<a class="btn btn-outline-primary" href="list.do">목록</a>
+		<a class="btn btn-outline-primary" href="list.do?curPage=1&locationCode=0">취소</a>
 	</form>
 	<br><br>
 	<script>

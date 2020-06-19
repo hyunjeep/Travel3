@@ -21,13 +21,11 @@ public class ListPageCommand implements Command {
 		String sLocation = request.getParameter("locationCode");
 		
 		int curPage = 1;
-		
 		if (sCurPage != null) {
 			curPage = Integer.parseInt(sCurPage);
 		}
 		
 		int location = 0;
-		
 		if(sLocation != null) {
 			location = Integer.parseInt(sLocation);
 		}

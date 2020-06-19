@@ -19,10 +19,22 @@ public class ReplyUICommand implements Command {
 			throws ServletException, IOException {
 
 		String sNum = request.getParameter("num");
+		String sCurPage = request.getParameter("curPage");
+		String sLocation = request.getParameter("locationCode");
+		
 		int num = 0;
-
 		if (sNum != null) {
 			num = Integer.parseInt(sNum);
+		}
+		
+		int curPage = 1;
+		if (sCurPage != null) {
+			curPage = Integer.parseInt(sCurPage);
+		}
+		
+		int location = 0;
+		if(sLocation != null) {
+			location = Integer.parseInt(sLocation);
 		}
 		
 		BoardDAO dao = new BoardDAO();

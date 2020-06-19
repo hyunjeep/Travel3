@@ -61,7 +61,8 @@
 			<textarea class="form-control" id="exampleFormControlTextlocation1" rows="10" name="content"></textarea>
 
 			<button class="btn btn-primary" type="submit">답글 작성</button>
-			<a class="btn btn-outline-primary" href="list.do">목록</a>
+			<a class="btn btn-outline-primary" href="list.do?curPage=1&locationCode=0">취소</a>
+			<a class="btn btn-outline-primary" href="list.do?curPage=${param.curPage}&locationCode=${param.locationCode}">뒤로가기</a>
 	</form>
 
 	<script>

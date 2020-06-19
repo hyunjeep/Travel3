@@ -31,9 +31,13 @@
 		번호 : ${dto.num} | 작성일 : ${dto.writeday} | 조회수 : ${dto.readcnt} <br> <br> 제목 : ${dto.title} <br> 작성자 : ${dto.writer} <br> 지역 : ${dto.locationName} <br> 내용 : ${dto.content} <br>
 		<br>
 
-		<a class="btn btn-primary" href="modifyui.do?curPage=${param.curPage}&locationCode=${param.locationCode}&num=${dto.num}">수정</a>
-		<a class="btn btn-outline-primary" href="delete.do?num=${dto.num}">삭제</a>
-		<a class="btn btn-outline-primary" href="replyui.do?num=${dto.num}&title=${dto.title}">답글</a>
+		<c:if test="${dto.writer eq login.id}">
+			<a class="btn btn-primary" href="modifyui.do?curPage=${param.curPage}&locationCode=${param.locationCode}&num=${dto.num}">수정</a>
+			<a class="btn btn-outline-primary" href="delete.do?num=${dto.num}">삭제</a>
+		</c:if>
+		<c:if test="${null ne login.id}">
+		<a class="btn btn-outline-primary" href="replyui.do?curPage=${param.curPage}&locationCode=${param.locationCode}&num=${dto.num}">답글</a>
+		</c:if>
 		<a class="btn btn-outline-primary" href="list.do?curPage=${param.curPage}&locationCode=${param.locationCode}">목록</a>
 	</div>
 	<br>
