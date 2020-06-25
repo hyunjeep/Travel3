@@ -1,3 +1,5 @@
+<%@page import="java.util.List"%>
+<%@page import="kr.co.dto.FileDTO"%>
 <%@ page import="kr.co.dto.PageTO"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
@@ -13,149 +15,99 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 <%@ include file="./com/head.jsp"%>
 </head>
 <body>
 	<%@ include file="./com/top.jsp"%>
 	<%@ include file="./com/navbar.jsp"%>
 	<br>
-	<br>
-	<ul class="nav">
-		<c:if test="${null ne login.id}">
-			<li class="nav-item"><a class="nav-link active" href="logout.do?id=${login.id}">로그아웃</a></li>
-		</c:if>
-		<c:if test="${null eq login.id}">
-			<li class="nav-item"><a class="nav-link" href="loginui.do">로그인</a></li>
-			<li class="nav-item"><a class="nav-link" href="insertui.do">회원가입</a></li>
-		</c:if>
-	</ul>
-	<c:if test="${null ne login.id}">
-		<a href="writeui.do?curPage=${null ? 1 : param.curPage}&locationCode=${null ? 0 : (param.locationCode)}" class="btn btn-outline-primary">글쓰기</a>
-	</c:if>
-	<c:if test="${null eq login.id}">
-		<button class="btn btn-outline-primary" onclick="if(confirm('로그인 후 이용해주세요'))location.href='loginui.jsp';" type="button">글쓰기</button>
-	</c:if>
+
+	<div class="container">
+		<div class="d-flex">
+			<div class="mr-auto">
+				<h3>mate</h3>
+			</div>
+			<div>
+				<c:if test="${null ne login.id}">
+					<a href="writeui.do?curPage=${null ? 1 : param.curPage}&locationCode=${locationCode}" class="btn btn-outline-primary">글쓰기</a>
+				</c:if>
+				<c:if test="${null eq login.id}">
+					<button class="btn btn-success" onclick="if(confirm('로그인 후 이용해주세요'))location.href='loginui.jsp';" type="button">글쓰기</button>
+				</c:if>
+			</div>
+		</div>
+		<br>
+		<div class="btn-group-md" name="locationCode" id="locationCode">
+			<c:forEach items="${locationList}" var="dto">
+				<a href="list.do?curPage=1&locationCode=${dto.locationCode}"
+					class="btn btn-outline-primary ${locationCode eq dto.locationCode ? 'active' : '' } my-1" role="button" value="${dto.locationCode}">#${dto.locationName}</a>
+			</c:forEach>
+		</div>
+		<br>
+		<table class="table table-hover">
+			<thead style="text-align: center">
+				<tr>
+					<th>번호</th>
+					<th>지역</th>
+					<th>제목</th>
+					<th>글쓴이</th>
+					<th>날짜</th>
+					<th>조회수</th>
+				</tr>
+			</thead>
+			<tbody>
+				<c:forEach items="${list}" var="dto">
+					<tr>
+						<td style="text-align: center">${dto.num}</td>
+						<td style="text-align: center">${dto.locationName}</td>
+						<td width="350px"><c:forEach begin="1" end="${dto.repIndent}">
+						&nbsp;&nbsp;<svg class="bi bi-arrow-return-right" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor"
+									xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd"
+										d="M10.146 5.646a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L12.793 9l-2.647-2.646a.5.5 0 0 1 0-.708z" />
+  <path fill-rule="evenodd" d="M3 2.5a.5.5 0 0 0-.5.5v4A2.5 2.5 0 0 0 5 9.5h8.5a.5.5 0 0 0 0-1H5A1.5 1.5 0 0 1 3.5 7V3a.5.5 0 0 0-.5-.5z" /></svg>
+							</c:forEach> <a href="read.do?curPage=${to.curPage}&locationCode=${locationCode}&num=${dto.num}">${dto.title}</a> &nbsp; <c:forEach items="${fileNumList}"
+								var="fto">
+								<c:if test="${dto.num eq fto.fileNum}">
+									<svg class="bi bi-card-image" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  									<path fill-rule="evenodd"
+											d="M14.5 3h-13a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z" />
+  									<path d="M10.648 7.646a.5.5 0 0 1 .577-.093L15.002 9.5V13h-14v-1l2.646-2.354a.5.5 0 0 1 .63-.062l2.66 1.773 3.71-3.71z" />
+  									<path fill-rule="evenodd" d="M4.502 7a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z" />
+								</svg>
+								</c:if>
+							</c:forEach></td>
+						<td style="text-align: center">${dto.writer}</td>
+						<c:choose>
+							<c:when test="${fn:substring(today,0,10) eq fn:substring(dto.writeday,0,10)}">
+								<td style="text-align: center">${fn:substring(dto.writeday,11,16)}</td>
+							</c:when>
+							<c:otherwise>
+								<td style="text-align: center">${fn:substring(dto.writeday,0,10)}</td>
+							</c:otherwise>
+						</c:choose>
+						<td style="text-align: center">${dto.readcnt}</td>
+
+					</tr>
+				</c:forEach>
+
+			</tbody>
+
+		</table>
 	</div>
 	<br>
+	<ul class="pagination justify-content-center">
+		<li class="page-item ${to.curPage <= 1 ? 'disabled' : '' }"><a class="page-link"
+			href="list.do?curPage=${idx > 1 ? (idx -1) : 1}&locationCode=${locationCode > 0 ? locationCode : 0}">Previous</a></li>
+		<c:forEach begin="${to.beginPageNum}" end="${to.stopPageNum}" var="idx">
+			<li class="page-item ${to.curPage eq idx ? 'active' : '' }"><a class="page-link"
+				href="list.do?curPage=${idx}&locationCode=${locationCode > 0 ? locationCode : 0}">${idx}</a></li>
+		</c:forEach>
+		<li class="page-item ${to.curPage >= to.totalPage ? 'disabled' : ''}"><a class="page-link"
+			href="list.do?curPage=${idx < to.totalPage ? (idx +1) : to.totalPage}&locationCode=${locationCode > 0 ? locationCode : 0}">Next</a></li>
+	</ul>
 	<br>
-	<div class="container">
-		<h2>게시글 목록</h2>
-		<br>
-		<div class="btn-group-lg" name="locationCode" id="locationCode">
-			<a href="list.do?curPage=1&locationCode=0" class="btn btn-outline-primary" role="button">전체</a>
-			<a href="list.do?curPage=1&locationCode=2" class="btn btn-outline-primary" role="button" value="2">서울</a>
-			<a href="list.do?curPage=1&locationCode=51" class="btn btn-outline-primary" role="button" value="51">부산</a>
-			<a href="list.do?curPage=1&locationCode=53" class="btn btn-outline-primary" role="button" value="53">대구</a>
-			<a href="list.do?curPage=1&locationCode=32" class="btn btn-outline-primary" role="button" value="32">인천</a>
-			<a href="list.do?curPage=1&locationCode=62" class="btn btn-outline-primary" role="button" value="62">광주</a>
-			<a href="list.do?curPage=1&locationCode=42" class="btn btn-outline-primary" role="button" value="42">대전</a>
-			<a href="list.do?curPage=1&locationCode=52" class="btn btn-outline-primary" role="button" value="52">울산</a>
-			<a href="list.do?curPage=1&locationCode=44" class="btn btn-outline-primary" role="button" value="44">세종</a>
-			<a href="list.do?curPage=1&locationCode=31" class="btn btn-outline-primary" role="button" value="31">경기</a>
-			<a href="list.do?curPage=1&locationCode=33" class="btn btn-outline-primary" role="button" value="33">강원</a>
-			<a href="list.do?curPage=1&locationCode=43" class="btn btn-outline-primary" role="button" value="43">충북</a>
-			<a href="list.do?curPage=1&locationCode=41" class="btn btn-outline-primary" role="button" value="41">충남</a>
-			<a href="list.do?curPage=1&locationCode=63" class="btn btn-outline-primary" role="button" value="63">전북</a>
-			<a href="list.do?curPage=1&locationCode=61" class="btn btn-outline-primary" role="button" value="61">전남</a>
-			<a href="list.do?curPage=1&locationCode=54" class="btn btn-outline-primary" role="button" value="54">경북</a>
-			<a href="list.do?curPage=1&locationCode=55" class="btn btn-outline-primary" role="button" value="55">경남</a>
-			<a href="list.do?curPage=1&locationCode=64" class="btn btn-outline-primary" role="button" value="63">제주</a>
-			<a href="list.do?curPage=1&locationCode=1" class="btn btn-outline-primary" role="button" value="1">기타</a>
-			<br> <br>
-			<%
-				
-			%>
-
-			<table class="table">
-				<thead>
-					<tr>
-						<th>번호</th>
-						<th>지역</th>
-						<th>제목</th>
-						<th>글쓴이</th>
-						<th>날짜</th>
-						<th>조회수</th>
-						<!-- 						<th>repRoot</th>
-						<th>repStep</th>
-						<th>repIndent</th> -->
-					</tr>
-				</thead>
-				<tbody>
-					<c:forEach items="${list}" var="dto">
-						<tr>
-							<td>${dto.num}</td>
-							<td>${dto.locationName}</td>
-							<td width="200px"><c:forEach begin="1" end="${dto.repIndent}">
-						&nbsp;&nbsp;Re:
-					</c:forEach> <a href="read.do?num=${dto.num}&curPage=${to.curPage}&locationCode=${null ? 0 : (param.locationCode)}">${dto.title}</a></td>
-							<td>${dto.writer}</td>
-							<c:choose>
-								<c:when test="${fn:substring(today,0,10) eq fn:substring(dto.writeday,0,10)}">
-									<td>${fn:substring(dto.writeday,11,16)}</td>
-								</c:when>
-								<c:otherwise>
-									<td>${fn:substring(dto.writeday,0,10)}</td>
-								</c:otherwise>
-							</c:choose>
-							<td>${dto.readcnt}</td>
-							<%-- 							<td>${dto.repRoot}</td>
-							<td>${dto.repStep}</td>
-							<td>${dto.repIndent}</td> --%>
-						</tr>
-					</c:forEach>
-
-				</tbody>
-
-			</table>
-		</div>
-		<br>
-		<nav>
-			<ul class="pagination pagination-lg">
-				<c:if test="${(to.curPage-1) > 0 }">
-					<li class="disabled"><a href="list.do?curPage=${to.curPage-1}&locationCode=${null ? 0 : (param.locationCode)}" aria-label="Previous">
-							<span aria-hidden="true">&nbsp;&laquo;&nbsp;</span>
-						</a></li>
-					<%-- 			<a style="text-decoration: none;" href="list.do?curPage=${to.curPage-1}&locationCode=${null ? 0 : (param.locationCode)}">&laquo;</a> --%>
-				</c:if>
-				&nbsp;
-				<c:forEach begin="${to.beginPageNum}" end="${to.stopPageNum}" var="idx">
-					<c:if test="${to.curPage == idx}">
-						<li class="active"><a href="list.do?curPage=${idx}&locationCode=${null ? 0 : (param.locationCode)}">
-								&nbsp;${idx}&nbsp;<span class="sr-only"> </span>
-							</a></li>
-					</c:if>
-					<c:if test="${to.curPage != idx}">
-						<li class="active"><a href="list.do?curPage=${idx}&locationCode=${null ? 0 : (param.locationCode)}">
-								&nbsp;${idx}&nbsp;<span class="sr-only"> </span>
-							</a></li>
-					</c:if>
-				</c:forEach>
-				<c:if test="${to.curPage != to.totalPage}">
-					<li class="disabled"><a href="list.do?curPage=${to.curPage + 1}&locationCode=${null ? 0 : (param.locationCode)}" aria-label="Next">
-							<span aria-hidden="true">&nbsp;&raquo;&nbsp;</span>
-						</a></li>
-				</c:if>
-			</ul>
-		</nav>
-		<br> <br>
-
-		<div class="row">
-			<div class="col-lg-3">
-				<div class="input-group">
-					<input type="text" class="form-control" placeholder="Search for..."> <span class="input-group-btn">
-						<button class="btn btn-default" type="button">Go!</button>
-					</span>
-				</div>
-				<!-- /input-group -->
-			</div>
-			<!-- /.col-lg-6 -->
-		</div>
-		<!-- /.row -->
-		<br> <br>
-		<%@ include file="./com/footer.jsp"%>
+	<br>
+	<%@ include file="./com/footer.jsp"%>
 </body>
 </html>

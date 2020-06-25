@@ -12,6 +12,7 @@ public class BoardDTO implements Serializable {
 	private String locationName;
 	private String content;
 	private String writeday;
+	private FileDTO file;
 	private int readcnt;
 	private int repRoot;
 	private int repStep;
@@ -22,7 +23,7 @@ public class BoardDTO implements Serializable {
 	}
 
 	public BoardDTO(int num, String writer, String title, int locationCode, String locationName, String content,
-			String writeday, int readcnt, int repRoot, int repStep, int repIndent) {
+			String writeday, FileDTO file, int readcnt, int repRoot, int repStep, int repIndent) {
 		super();
 		this.num = num;
 		this.writer = writer;
@@ -31,6 +32,7 @@ public class BoardDTO implements Serializable {
 		this.locationName = locationName;
 		this.content = content;
 		this.writeday = writeday;
+		this.file = file;
 		this.readcnt = readcnt;
 		this.repRoot = repRoot;
 		this.repStep = repStep;
@@ -93,6 +95,14 @@ public class BoardDTO implements Serializable {
 		this.writeday = writeday;
 	}
 
+	public FileDTO getFile() {
+		return file;
+	}
+
+	public void setFile(FileDTO file) {
+		this.file = file;
+	}
+
 	public int getReadcnt() {
 		return readcnt;
 	}
@@ -150,13 +160,5 @@ public class BoardDTO implements Serializable {
 			return false;
 		return true;
 	}
-
-	@Override
-	public String toString() {
-		return "BoardDTO [num=" + num + ", writer=" + writer + ", title=" + title + ", locationCode=" + locationCode
-				+ ", locationName=" + locationName + ", content=" + content + ", writeday=" + writeday + ", readcnt="
-				+ readcnt + ", repRoot=" + repRoot + ", repStep=" + repStep + ", repIndent=" + repIndent + "]";
-	}
-
 	
 }

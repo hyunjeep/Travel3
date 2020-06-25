@@ -40,6 +40,8 @@ public class ModifyUICommand implements Command {
 		BoardDTO dto = dao.modifyUI(num);
 		
 		request.setAttribute("dto", dto);
+		request.setAttribute("curPage", curPage);
+		request.setAttribute("locationCode", locationCode);
 
 		return new CommandAction(false, "modify.jsp");
 	}

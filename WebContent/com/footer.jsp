@@ -3,7 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
-<div class="jumbotron text-center" style="margin-bottom: 0">
+<div class="jumbotron text-center" style="margin-bottom: 0 " fixed-bottom>
 	<p>Footer</p>
 
 	<ul class="nav">

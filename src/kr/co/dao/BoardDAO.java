@@ -11,7 +11,11 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
+import com.sun.xml.internal.bind.v2.util.FatalAdapter;
+
 import kr.co.dto.BoardDTO;
+import kr.co.dto.FileDTO;
+import kr.co.dto.LocationDTO;
 import kr.co.dto.PageTO;
 
 public class BoardDAO {
@@ -42,32 +46,45 @@ public class BoardDAO {
 		}
 	}
 
-	public void write(BoardDTO dto) {
+	public void write(BoardDTO dto, FileDTO fto) {
 		Connection conn = null;
-		PreparedStatement pstmt = null;
-		String sql = "insert into tbl_board (num, writer, title, locationCode, content, repRoot, repStep, repIndent) values (?, ?, ?, ?, ?, ?, ?, ?)";
-
+		PreparedStatement pstmt1 = null;
+		PreparedStatement pstmt2 = null;
+		
+		String sql1 = "insert into tbl_board (num, writer, title, locationCode, content, repRoot, repStep, repIndent) values (?, ?, ?, ?, ?, ?, ?, ?)";
+		String sql2 = "insert into tbl_file (fileNum, fileName, orgFileName, fileUrl) values (?, ?, ?, ?)";
+		
 		try {
 			conn = dataFactory.getConnection();
-			pstmt = conn.prepareStatement(sql);
+			pstmt1 = conn.prepareStatement(sql1);
 
 			int num = createNum(conn);
 
-			pstmt.setInt(1, num);
-			pstmt.setString(2, dto.getWriter());
-			pstmt.setString(3, dto.getTitle());
-			pstmt.setInt(4, dto.getLocationCode());
-			pstmt.setString(5, dto.getContent());
-			pstmt.setInt(6, num);
-			pstmt.setInt(7, 0);
-			pstmt.setInt(8, 0);
-
-			pstmt.executeUpdate();
+			pstmt1.setInt(1, num);
+			pstmt1.setString(2, dto.getWriter());
+			pstmt1.setString(3, dto.getTitle());
+			pstmt1.setInt(4, dto.getLocationCode());
+			pstmt1.setString(5, dto.getContent());
+			pstmt1.setInt(6, num);
+			pstmt1.setInt(7, 0);
+			pstmt1.setInt(8, 0);
+			
+			pstmt2 = conn.prepareStatement(sql2);
+			pstmt2.setInt(1, num);
+			pstmt2.setString(2, fto.getFileName());
+			pstmt2.setString(3, fto.getOrgFileName());
+			pstmt2.setString(4, fto.getFileUrl());
+			
+			pstmt1.executeUpdate();
+			pstmt2.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			try {
-				closeAll(null, pstmt, conn);
+				if (pstmt1 != null) {
+					pstmt1.close();
+				}
+				closeAll(null, pstmt2, conn);
 			} catch (Exception e2) {
 				e2.printStackTrace();
 			}
@@ -124,7 +141,7 @@ public class BoardDAO {
 				int repStep = rs.getInt("repStep");
 				int repIndent = rs.getInt("repIndent");
 
-				list.add(new BoardDTO(num, writer, title, locationCode, locationName, null, writeday, readcnt, repRoot,
+				list.add(new BoardDTO(num, writer, title, locationCode, locationName, null, writeday, null, readcnt, repRoot,
 						repStep, repIndent));
 			}
 		} catch (Exception e) {
@@ -140,14 +157,16 @@ public class BoardDAO {
 	}
 
 	public BoardDTO read(int num) {
+		FileDTO fto = null;
 		BoardDTO dto = null;
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		String sql = "select * from (select num, writer, writeday, title, "
-				+ "locationName, content, readcnt, repRoot, repStep, repIndent from"
-				+ " (select * from tbl_board b left join tbl_location l on b.locationCode = "
-				+ "l.locationCode order by repRoot desc, repStep asc)) where num=?";
+		String sql = "select * from (select rownum rnum, num, writer, writeday, title, locationName,"
+				+ " content, readcnt, repRoot, repStep, repIndent, fileNum, orgFileName, fileName, fileUrl from"
+				+ " (select * from tbl_board b left join tbl_location l on b.locationCode = l.locationCode"
+				+ " left join tbl_file f on b.num = f.fileNum order by repRoot desc, repStep asc)) where num=?";
+		
 		boolean isOk = false;
 
 		try {
@@ -168,8 +187,13 @@ public class BoardDAO {
 				String writeday = rs.getString("writeday");
 				String content = rs.getString("content");
 				int readcnt = rs.getInt("readcnt");
-
-				dto = new BoardDTO(num, writer, title, 0, locationName, content, writeday, readcnt, 0, 0, 0);
+				int fileNum = rs.getInt("fileNum");
+				String fileName = rs.getString("fileName");
+				String orgFileName = rs.getString("orgFileName");
+				String fileUrl = rs.getString("fileUrl");
+				
+				fto = new FileDTO(fileNum, fileName, orgFileName, fileUrl);
+				dto = new BoardDTO(num, writer, title, 0, locationName, content, writeday, fto, readcnt, 0, 0, 0);
 
 				isOk = true;
 			}
@@ -207,12 +231,13 @@ public class BoardDAO {
 	}
 
 	public BoardDTO modifyUI(int num) {
+		FileDTO fto = null;
 		BoardDTO dto = null;
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		String sql = "select * from tbl_board b left join tbl_location l on b.locationCode ="
-				+ " l.locationCode where num=? order by repRoot desc, repStep asc";
+		String sql = "select * from tbl_board b left join tbl_location l on b.locationCode = l.locationCode left join tbl_file f"
+				+ " on b.num = f.fileNum where num=? order by repRoot desc, repStep asc";
 
 		try {
 			conn = dataFactory.getConnection();
@@ -229,8 +254,13 @@ public class BoardDAO {
 				int repRoot = rs.getInt("repRoot");
 				int repStep = rs.getInt("repStep");
 				int repIndent = rs.getInt("repIndent");
-
-				dto = new BoardDTO(num, writer, title, locationCode, locationName, content, null, 0, repRoot, repStep, repIndent);
+				int fileNum = rs.getInt("fileNum");
+				String fileName = rs.getString("fileName");
+				String orgFileName = rs.getString("orgFileName");
+				String fileUrl = rs.getString("fileUrl");
+				
+				fto = new FileDTO(fileNum, fileName, orgFileName, fileUrl);
+				dto = new BoardDTO(num, writer, title, locationCode, locationName, content, null, fto, 0, repRoot, repStep, repIndent);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -245,9 +275,13 @@ public class BoardDAO {
 	}
 
 	public void modify(BoardDTO dto) {
+		FileDTO fto = null;
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		String sql = "update tbl_board set title=?, locationCode=?, content=? where num=?";
+		String sql = "update (select title, locationCode, content, fileName, orgFileName, fileUrl "
+				+ "from tbl_board b left join tbl_file f on b.num = f.fileNum) "
+				+ "set title=?, locationCode=?, fileNum=?, fileName=?, orgFileName=?, fileUrl=?"
+				+ " where num=?";
 
 		try {
 			conn = dataFactory.getConnection();
@@ -256,7 +290,11 @@ public class BoardDAO {
 			pstmt.setString(1, dto.getTitle());
 			pstmt.setInt(2, dto.getLocationCode());
 			pstmt.setString(3, dto.getContent());
-			pstmt.setInt(4, dto.getNum());
+			pstmt.setInt(4, fto.getFileNum());
+			pstmt.setString(5, fto.getFileName());
+			pstmt.setString(6, fto.getOrgFileName());
+			pstmt.setString(7, fto.getFileUrl());
+			pstmt.setInt(8, dto.getNum());
 
 			pstmt.executeUpdate();
 		} catch (Exception e) {
@@ -364,10 +402,11 @@ public class BoardDAO {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		String sql = "select * from (select rownum rnum, num, writer, writeday, title, locationName, content, readcnt, repRoot, repStep, repIndent "
-				+ "from (select * from tbl_board b left join tbl_location l on b.locationCode = l.locationCode where b.locationCode like decode(?, 0, '%', ?)" + 
+		String sql = "select * from (select rownum rnum, num, writer, writeday, title, locationName, content, readcnt, repRoot, repStep, repIndent, fileNum, fileName, orgFileName, fileUrl "
+				+ "from (select * from tbl_board b left join tbl_location l on b.locationCode = l.locationCode left join tbl_file f on b.num = f.fileNum where b.locationCode like decode(?, 0, '%', ?)" + 
 				" order by repRoot desc, repStep asc)) where rnum >=? and rnum <=?";
 
+		FileDTO fto = null;
 		PageTO to = new PageTO(curPage);
 		List<BoardDTO> list = new ArrayList<BoardDTO>();
 
@@ -395,8 +434,13 @@ public class BoardDAO {
 				int repRoot = rs.getInt("repRoot");
 				int repStep = rs.getInt("repStep");
 				int repIndent = rs.getInt("repIndent");
-
-				BoardDTO dto = new BoardDTO(num, writer, title, 0, locationName, null, writeday, readcnt, repRoot, repStep, repIndent);
+				int fileNum = rs.getInt("num");
+				String fileName = rs.getString("fileName");
+				String orgFileName = rs.getString("orgFileName");
+				String fileUrl = rs.getString("fileUrl");
+				
+				fto = new FileDTO(fileNum, fileName, orgFileName, fileUrl);
+				BoardDTO dto = new BoardDTO(num, writer, title, 0, locationName, null, writeday, fto, readcnt, repRoot, repStep, repIndent);
 				list.add(dto);
 			}
 			to.setList(list);
@@ -439,5 +483,116 @@ public class BoardDAO {
 			}
 		}
 		return amount;
+	}
+
+	public List<LocationDTO> location() {
+		List<LocationDTO> list = new ArrayList<LocationDTO>();
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql = "select * from tbl_location order by locationCode asc";
+		
+		try {
+			conn = dataFactory.getConnection();
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+				int locationCode = rs.getInt("locationCode");
+				String locationName = rs.getString("locationName");
+				
+				list.add(new LocationDTO(locationCode, locationName));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			closeAll(rs, pstmt, conn);
+		}
+		return list;
+	}
+
+	public int totalNum() {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql = "select max(num) from tbl_board";
+		Integer num = null;
+		try {
+			conn = dataFactory.getConnection();
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+
+			if (rs.next()) {
+				num = rs.getInt(1);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				closeAll(rs, pstmt, conn);
+			} catch (Exception e2) {
+				e2.printStackTrace();
+			}
+		}
+		return num;
+	}
+
+	public String fileUrl(int num) {
+		String fileUrl = null;
+		String fileName = null;
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement pstmt = null;
+		String sql = "select fileName, fileUrl from tbl_file where fileNum=?";
+		
+		try {
+			conn = dataFactory.getConnection();
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, num);
+			rs = pstmt.executeQuery();
+			
+			while (rs.next()) {
+				fileName = rs.getString("fileName");
+				fileUrl = rs.getString("fileUrl");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				closeAll(rs, pstmt, conn);
+			} catch (Exception e2) {
+				e2.printStackTrace();
+			}
+		}
+		return fileName;
+	}
+
+	public List<FileDTO> fileNumList() {
+		List<FileDTO> fileNumList = new ArrayList<FileDTO>();
+		int fileNum = 0;
+		Connection conn = null;
+		ResultSet rs = null;
+		PreparedStatement pstmt = null;
+		String sql = "select fileNum from tbl_board b left join tbl_file f on b.num = f.fileNum";
+		
+		try {
+			conn = dataFactory.getConnection();
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			
+			while (rs.next()) {
+				fileNum = rs.getInt("fileNum");
+				fileNumList.add(new FileDTO(fileNum));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				closeAll(rs, pstmt, conn);
+			} catch (Exception e2) {
+				e2.printStackTrace();
+			}
+		}
+		return fileNumList;
 	}
 }

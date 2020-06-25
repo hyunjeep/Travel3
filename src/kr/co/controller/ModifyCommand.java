@@ -39,7 +39,7 @@ public class ModifyCommand implements Command {
 			curPage = Integer.parseInt(sCurPage);
 		}
 	
-		new BoardDAO().modify(new BoardDTO(num, writer, title, locationCode, null, content, null, -1, -1, -1, -1));
+		new BoardDAO().modify(new BoardDTO(num, writer, title, locationCode, null, content, null, null, -1, -1, -1, -1));
 
 		return new CommandAction(true, "list.do?curPage="+curPage+"&locationCode="+locationCode);
 	}

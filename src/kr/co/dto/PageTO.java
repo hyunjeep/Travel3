@@ -132,6 +132,5 @@ public class PageTO {
 				+ ", totalPage=" + totalPage + ", startNum=" + startNum + ", endNum=" + endNum + ", beginPageNum="
 				+ beginPageNum + ", stopPageNum=" + stopPageNum + ", list=" + list + "]";
 	}
-	
-	
+
 }

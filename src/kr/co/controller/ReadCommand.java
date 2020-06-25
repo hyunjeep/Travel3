@@ -36,12 +36,19 @@ public class ReadCommand implements Command {
 			locationCode = Integer.parseInt(sLocationCode);
 		}
 		
-		
 		BoardDAO dao = new BoardDAO();
 		BoardDTO dto = dao.read(num);
+		int totalNum = dao.totalNum();
+		String fileName = dao.fileUrl(num);
 		
 		request.setAttribute("dto", dto);
-
+		request.setAttribute("curPage", curPage);
+		request.setAttribute("locationCode", locationCode);
+		request.setAttribute("totalNum", totalNum);
+		request.setAttribute("fileName", fileName);
+		
+		System.out.println(fileName);
+		
 		return new CommandAction(false, "read.jsp");
 	}
 

@@ -24,12 +24,10 @@ public class LoginCommand implements Command {
 		LoginDTO dto = new LoginDTO(id, pw);
 		boolean isLogin = dao.login(dto);
 		
-		System.out.println(dto.toString());
-		
 		if (isLogin) {
 			HttpSession session = request.getSession();
 			session.setAttribute("login", new LoginDTO(id, pw));
-			return new CommandAction(false, "main.jsp");
+			return new CommandAction(false, "list.do?curPage=1&locationCode=0");
 		} else {
 			request.setAttribute("error", "ID와 Password가 일치하지 않습니다.");
 			return new CommandAction(false, "loginui.do");

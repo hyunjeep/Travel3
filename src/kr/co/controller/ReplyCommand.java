@@ -34,7 +34,7 @@ public class ReplyCommand implements Command {
 		}
 
 		BoardDAO dao = new BoardDAO();
-		BoardDTO dto = new BoardDTO(-1, writer, title, locationCode, null, content, null, 0, -1, -1, -1);
+		BoardDTO dto = new BoardDTO(-1, writer, title, locationCode, null, content, null, null, 0, -1, -1, -1);
 		dao.reply(orgNum, dto);
 		
 		return new CommandAction(true, "list.do?curPage=1&locationCode="+locationCode);
