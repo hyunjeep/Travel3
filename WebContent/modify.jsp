@@ -1,3 +1,4 @@
+<%@page import="kr.co.dto.FileDTO"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
@@ -18,11 +19,16 @@
 <body>
 	<%@ include file="./com/top.jsp"%>
 	<%@ include file="./com/navbar.jsp"%>
-
-	<form class="container" action="modify.do" method="post">
-		<br> <br>
+	<br>
+	<br>
+	<form class="container" action="modify.do" method="post" enctype="multipart/form-data">
 		<h2>글 수정하기</h2>
-		<input name="num" value="${dto.num}" hidden="true"> <br>
+		<br> <br> <input name="num" value="${dto.num}" hidden="true">
+		<div class="form-inline">
+			<label for="exampleFormControlInput2"> 작성자 :&nbsp;&nbsp;&nbsp;<input class="form-control" id="exampleFormControlInput2" name="writer"
+				value="${login.id}" readonly="readonly"></label>
+		</div>
+		<br>
 		<div class="form-inline">
 			지역 :&nbsp;&nbsp;&nbsp; <select class="custom-select" name="locationCode" id="locationCode">
 				<option value="2">서울</option>
@@ -42,16 +48,20 @@
 				<option value="54">경북</option>
 				<option value="55">경남</option>
 				<option value="64">제주</option>
-				<option value="1">기타</option> 
-				</select>
-				&nbsp;&nbsp;&nbsp;
-				<label for="exampleFormControlInput1"> 제목 : </label>&nbsp;&nbsp;&nbsp;
-				<input name="title" class="form-control" id="exampleFormControlInput1" value="${dto.title}" required="required">
+				<option value="1">기타</option>
+			</select> &nbsp;&nbsp;&nbsp; <label for="exampleFormControlInput1"> 제목 :</label>&nbsp;&nbsp;&nbsp; <input name="title" class="form-control col-9"
+				id="exampleFormControlInput1" value="${dto.title}" required="required">
+		</div><br>
+
+		<div class="custom-file">
+			<input type="file" class="custom-file-input" id="file" name="fileName"> <label class="custom-file-label" for="customFile">
+			<c:choose>
+			<c:when test="${dto.file ne null }">${fileName}</c:when>
+			<c:otherwise>file upload</c:otherwise>
+			</c:choose>
+			</label>
 		</div>
 
-		<label for="exampleFormControlInput2"> 작성자 : <input class="form-control" id="exampleFormControlInput2" name="writer" value="${login.id}" readonly="readonly">&nbsp;&nbsp;</label>
-		<label for="exampleFormControlInput3"> 
-		조회수 : <input class="form-control" id="exampleFormControlInput2" name="readcnt" value="${dto.readcnt}" readonly="readonly"></label>
 
 		<div class="form-group">
 			<label for="exampleFormControlTextlocation1">content</label>
@@ -64,9 +74,17 @@
 	</form>
 
 	<script>
-		$(document).ready(function() {
-			$("#locationCode").val("${dto.locationCode}");
-		});
+	window.onload = function() {//윈도우가 열리면
+		var location = "<c:out value='${dto.locationCode}'/>";
+		$("#locationCode").val(location).prop("selected", true); //값이 dto.location인 option 선택
+	}
+	$(".custom-file-input").on(
+			"change",
+			function() {
+				var fileName = $(this).val().split("\\").pop();
+				$(this).siblings(".custom-file-label").addClass("selected")
+						.html(fileName);
+			});
 	</script>
 	<%@ include file="./com/footer.jsp"%>
 </body>

@@ -42,18 +42,15 @@ public class WriteCommand implements Command {
 		fileName = multi.getFilesystemName("fileName");
 		orgFileName = multi.getOriginalFileName("fileName");
 		
-		System.out.println(writer);
-		System.out.println(locationCode);
-		System.out.println(title);
-		////////////////////////////////////////////////////
-		System.out.println(fileName);
-		System.out.println(orgFileName);
-		System.out.println(fileUrl);
-		
 		FileDTO fto = new FileDTO(fileNum, fileName, orgFileName, fileUrl);
 		BoardDAO dao = new BoardDAO();
 		BoardDTO dto = new BoardDTO(0, writer, title, locationCode, null, content, null, fto, 0, 0, 0, 0);
+		
+		if (fileName != null) {
 		dao.write(dto, fto);
+		} else {
+			dao.write(dto);
+		}
 
 		return new CommandAction(true, "list.do?curPage=1&locationCode="+locationCode);
 	}

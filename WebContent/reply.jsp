@@ -20,55 +20,64 @@
 <body>
 	<%@ include file="./com/top.jsp"%>
 	<%@ include file="./com/navbar.jsp"%>
-
-	<form class="container" action="reply.do" method="post">
-		<br>
-		<br>
+	<br>
+	<br>
+	<form class="container" action="reply.do" method="post" enctype="multipart/form-data">
 		<h2>답글 쓰기</h2>
-		<input type="hidden" name="num" value="${dto.num}"> <br>
+		<br> <input type="hidden" name="num" value="${dto.num}">
 		<div class="form-inline">
-			<select class="custom-select" name="locationCode" id="locationCode">
-				<optgroup label="지역">
-					<option value="2">서울</option>
-					<option value="51">부산</option>
-					<option value="53">대구</option>
-					<option value="32">인천</option>
-					<option value="62">광주</option>
-					<option value="42">대전</option>
-					<option value="52">울산</option>
-					<option value="44">세종</option>
-					<option value="31">경기</option>
-					<option value="33">강원</option>
-					<option value="43">충북</option>
-					<option value="41">충남</option>
-					<option value="63">전북</option>
-					<option value="61">전남</option>
-					<option value="54">경북</option>
-					<option value="55">경남</option>
-					<option value="64">제주</option>
-					<option value="1">기타</option>
-				</optgroup>
-			</select><br>
-			<br>&nbsp;&nbsp;&nbsp; <label for="exampleFormControlInput1">제목 : </label>&nbsp;&nbsp;&nbsp; <input name="title" class="form-control" id="exampleFormControlInput1" value="${dto.title}"
-				required="required">
+			<label for="exampleFormControlInput2">작성자 :</label>&nbsp;&nbsp;&nbsp;<input name="writer" class="form-control" id="exampleFormControlInput2"
+				value="${login.id}" readonly="readonly">
 		</div>
-
-		<label for="exampleFormControlInput2"> 작성자 : <input name="writer" class="form-control" id="exampleFormControlInput2" value="${login.id}" readonly="readonly"> &nbsp;&nbsp;
-		</label>
-
+		<div class="form-inline">
+			지역 :&nbsp;&nbsp;&nbsp;<select class="custom-select" name="locationCode" id="locationCode">
+				<option value="2">서울</option>
+				<option value="51">부산</option>
+				<option value="53">대구</option>
+				<option value="32">인천</option>
+				<option value="62">광주</option>
+				<option value="42">대전</option>
+				<option value="52">울산</option>
+				<option value="44">세종</option>
+				<option value="31">경기</option>
+				<option value="33">강원</option>
+				<option value="43">충북</option>
+				<option value="41">충남</option>
+				<option value="63">전북</option>
+				<option value="61">전남</option>
+				<option value="54">경북</option>
+				<option value="55">경남</option>
+				<option value="64">제주</option>
+				<option value="1">기타</option>
+			</select><br> <br>&nbsp;&nbsp;&nbsp; <label for="exampleFormControlInput1">제목 : </label>&nbsp;&nbsp;&nbsp; <input name="title"
+				class="form-control col-9" id="exampleFormControlInput1" value="${dto.title}" required="required">
+		</div>
+		<div class="custom-file">
+			<input type="file" class="custom-file-input" id="file" name="fileName"> <label class="custom-file-label" for="customFile">file
+				upload</label>
+		</div>
+		<br> <br>
 		<div class="form-group">
-			<label for="exampleFormControlTextlocation1">content</label>
+			<label for="exampleFormControlTextlocation1">내용 : </label>
 			<textarea class="form-control" id="exampleFormControlTextlocation1" rows="10" name="content"></textarea>
-
-			<button class="btn btn-primary" type="submit">답글 작성</button>
-			<a class="btn btn-outline-primary" href="list.do?curPage=1&locationCode=0">취소</a>
-			<a class="btn btn-outline-primary" href="list.do?curPage=${param.curPage}&locationCode=${param.locationCode}">뒤로가기</a>
+		</div>
+		<button class="btn btn-primary" type="submit">답글 작성</button>
+		<a class="btn btn-outline-primary" href="list.do?curPage=1&locationCode=0">취소</a>
 	</form>
-
+	<br>
+	<br>
 	<script>
-		$(document).ready(function() {
-			$("#locationCode").val("${dto.locationCode}");
-		});
+		window.onload = function() {//윈도우가 열리면
+			var location = "<c:out value='${dto.locationCode}'/>";
+			$("#locationCode").val(location).prop("selected", true); //값이 dto.location인 option 선택
+		}
+		$(".custom-file-input").on(
+				"change",
+				function() {
+					var fileName = $(this).val().split("\\").pop();
+					$(this).siblings(".custom-file-label").addClass("selected")
+							.html(fileName);
+				});
 	</script>
 
 	<%@ include file="./com/footer.jsp"%>

@@ -3,6 +3,7 @@ package kr.co.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,6 +86,39 @@ public class BoardDAO {
 					pstmt1.close();
 				}
 				closeAll(null, pstmt2, conn);
+			} catch (Exception e2) {
+				e2.printStackTrace();
+			}
+		}
+	}
+	
+	public void write(BoardDTO dto) {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		
+		String sql1 = "insert into tbl_board (num, writer, title, locationCode, content, repRoot, repStep, repIndent) values (?, ?, ?, ?, ?, ?, ?, ?)";
+		
+		try {
+			conn = dataFactory.getConnection();
+			pstmt = conn.prepareStatement(sql1);
+
+			int num = createNum(conn);
+
+			pstmt.setInt(1, num);
+			pstmt.setString(2, dto.getWriter());
+			pstmt.setString(3, dto.getTitle());
+			pstmt.setInt(4, dto.getLocationCode());
+			pstmt.setString(5, dto.getContent());
+			pstmt.setInt(6, num);
+			pstmt.setInt(7, 0);
+			pstmt.setInt(8, 0);
+			
+			pstmt.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				closeAll(null, pstmt, conn);
 			} catch (Exception e2) {
 				e2.printStackTrace();
 			}
@@ -231,6 +265,42 @@ public class BoardDAO {
 	}
 
 	public BoardDTO modifyUI(int num) {
+		BoardDTO dto = null;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql = "select * from tbl_board where num=? order by repRoot desc, repStep asc";
+
+		try {
+			conn = dataFactory.getConnection();
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, num);
+			rs = pstmt.executeQuery();
+
+			if (rs.next()) {
+				String writer = rs.getString("writer");
+				String title = rs.getString("title");
+				int locationCode = rs.getInt("locationCode");
+				String content = rs.getString("content");
+				int repRoot = rs.getInt("repRoot");
+				int repStep = rs.getInt("repStep");
+				int repIndent = rs.getInt("repIndent");
+
+				dto = new BoardDTO(num, writer, title, locationCode, null, content, null, null, 0, repRoot, repStep, repIndent);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				closeAll(rs, pstmt, conn);
+			} catch (Exception e2) {
+				e2.printStackTrace();
+			}
+		}
+		return dto;
+	}
+	
+	public BoardDTO modifyUI(int num, int orgFileNum) {
 		FileDTO fto = null;
 		BoardDTO dto = null;
 		Connection conn = null;
@@ -254,7 +324,7 @@ public class BoardDAO {
 				int repRoot = rs.getInt("repRoot");
 				int repStep = rs.getInt("repStep");
 				int repIndent = rs.getInt("repIndent");
-				int fileNum = rs.getInt("fileNum");
+				int fileNum = orgFileNum;
 				String fileName = rs.getString("fileName");
 				String orgFileName = rs.getString("orgFileName");
 				String fileUrl = rs.getString("fileUrl");
@@ -274,6 +344,8 @@ public class BoardDAO {
 		return dto;
 	}
 
+//	여기부터ㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓ
+	
 	public void modify(BoardDTO dto) {
 		FileDTO fto = null;
 		Connection conn = null;
@@ -330,11 +402,72 @@ public class BoardDAO {
 		}
 	}
 
+	public void reply(int orgNum, BoardDTO dto, FileDTO fto) {
+		Connection conn = null;
+		PreparedStatement pstmt1 = null;
+		PreparedStatement pstmt2 = null;
+		String sql1 = "insert into tbl_board (num, writer, title, locationCode, content, repRoot, repStep, repIndent) values (?, ?, ?, ?, ?, ?, ?, ?)";
+		String sql2 = "insert into tbl_file (fileNum, fileName, orgFileName, fileUrl) values (?, ?, ?, ?)";
+		
+		boolean isOk = false;
+
+		try {
+			conn = dataFactory.getConnection();
+			conn.setAutoCommit(false);
+
+			int num = createNum(conn);
+			BoardDTO orgDTO = modifyUI(orgNum);
+			stepPlus1(conn, orgDTO);
+
+			pstmt1 = conn.prepareStatement(sql1);
+
+			pstmt1.setInt(1, num);
+			pstmt1.setString(2, dto.getWriter());
+			pstmt1.setString(3, dto.getTitle());
+			pstmt1.setInt(4, dto.getLocationCode());
+			pstmt1.setString(5, dto.getContent());
+			pstmt1.setInt(6, orgDTO.getRepRoot());
+			pstmt1.setInt(7, orgDTO.getRepStep() + 1);
+			pstmt1.setInt(8, orgDTO.getRepIndent() + 1);
+
+			pstmt2 = conn.prepareStatement(sql2);
+			pstmt2.setInt(1, num);
+			pstmt2.setString(2, fto.getFileName());
+			pstmt2.setString(3, fto.getOrgFileName());
+			pstmt2.setString(4, fto.getFileUrl());
+			
+			pstmt1.executeUpdate();
+			pstmt2.executeUpdate();
+			
+			isOk = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (isOk) {
+					conn.commit();
+				} else {
+					conn.rollback();
+				}
+			} catch (Exception e2) {
+				e2.printStackTrace();
+			}
+		}
+		if (pstmt1 != null) {
+			try {
+				pstmt1.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		closeAll(null, pstmt2, conn);
+	}
+	
 	public void reply(int orgNum, BoardDTO dto) {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		String sql = "insert into tbl_board (num, writer, title, locationCode, content, repRoot, repStep, repIndent) values (?, ?, ?, ?, ?, ?, ?, ?)";
-
+		
 		boolean isOk = false;
 
 		try {
@@ -356,10 +489,8 @@ public class BoardDAO {
 			pstmt.setInt(7, orgDTO.getRepStep() + 1);
 			pstmt.setInt(8, orgDTO.getRepIndent() + 1);
 
-			pstmt.executeUpdate();
-
+			pstmt.executeUpdate();		
 			isOk = true;
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {

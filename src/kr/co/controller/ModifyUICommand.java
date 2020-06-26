@@ -10,6 +10,7 @@ import kr.co.dao.BoardDAO;
 import kr.co.domain.Command;
 import kr.co.domain.CommandAction;
 import kr.co.dto.BoardDTO;
+import kr.co.dto.FileDTO;
 
 public class ModifyUICommand implements Command {
 
@@ -25,20 +26,35 @@ public class ModifyUICommand implements Command {
 		if (sNum != null) {
 			num = Integer.parseInt(sNum);
 		}
-		
+
 		int curPage = 1;
 		if (sCurPage != null) {
 			curPage = Integer.parseInt(sCurPage);
 		}
-		
+
 		int locationCode = 0;
 		if (sLocationCode != null) {
 			locationCode = Integer.parseInt(sLocationCode);
 		}
 
 		BoardDAO dao = new BoardDAO();
-		BoardDTO dto = dao.modifyUI(num);
-		
+		BoardDTO dto = null;
+		String fileName = null;
+		int orgFileNum = num;
+
+		System.out.println(num);
+		System.out.println(curPage);
+		System.out.println(locationCode);
+		System.out.println(orgFileNum);
+
+		if (orgFileNum != 0) {
+			dto = dao.modifyUI(num, orgFileNum);
+			fileName = dao.fileUrl(orgFileNum);
+		} else {
+			dto = dao.modifyUI(num);
+		}
+
+		request.setAttribute("fileName", fileName);
 		request.setAttribute("dto", dto);
 		request.setAttribute("curPage", curPage);
 		request.setAttribute("locationCode", locationCode);

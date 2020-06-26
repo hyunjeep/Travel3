@@ -47,8 +47,6 @@ public class ReadCommand implements Command {
 		request.setAttribute("totalNum", totalNum);
 		request.setAttribute("fileName", fileName);
 		
-		System.out.println(fileName);
-		
 		return new CommandAction(false, "read.jsp");
 	}
 

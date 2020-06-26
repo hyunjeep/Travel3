@@ -44,8 +44,6 @@ public class ListPageCommand implements Command {
 		request.setAttribute("locationList", loclist);
 		request.setAttribute("fileNumList", fileNumList);
 
-		System.out.println(fileNumList);
-
 		return new CommandAction(false, "list.jsp");
 	}
 

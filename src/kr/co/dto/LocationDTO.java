@@ -4,15 +4,12 @@ import java.io.Serializable;
 
 public class LocationDTO implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private int locationCode;
 	private String locationName;
-	
+
 	public LocationDTO() {
-		// TODO Auto-generated constructor stub
+
 	}
 
 	public LocationDTO(int locationCode, String locationName) {
@@ -40,7 +37,5 @@ public class LocationDTO implements Serializable {
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
-	
-	
 
 }

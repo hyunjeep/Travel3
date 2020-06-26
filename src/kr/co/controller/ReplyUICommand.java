@@ -41,8 +41,14 @@ public class ReplyUICommand implements Command {
 		BoardDTO dto = dao.modifyUI(num);
 
 		request.setAttribute("dto", dto);
-
-		return new CommandAction(false, "reply.jsp");
+		request.setAttribute("curPage", curPage);
+		request.setAttribute("location", location);
+		
+		System.out.println(sNum);
+		System.out.println(num);
+		System.out.println(curPage);
+		System.out.println(location);
+		return new CommandAction(false, "reply.jsp?");
 	}
 
 }
