@@ -132,5 +132,8 @@ update tbl_board set repStep = repStep+1 where repRoot=? and repStep>?
 ----------------------------------------------------------------------
 
 
+
 18151515
+안녕
+
 
